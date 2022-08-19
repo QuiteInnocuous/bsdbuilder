@@ -13,6 +13,9 @@ repositories {
 }
 
 dependencies {
+    // https://mvnrepository.com/artifact/com.squareup/kotlinpoet
+    implementation("com.squareup:kotlinpoet:1.12.0")
+
     testImplementation(kotlin("test"))
 }
 
