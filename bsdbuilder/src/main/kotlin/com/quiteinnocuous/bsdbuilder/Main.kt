@@ -1,13 +1,16 @@
 package com.quiteinnocuous.bsdbuilder
 
-import javax.xml.parsers.SAXParserFactory
+import com.squareup.kotlinpoet.FunSpec
+import javax.xml.parsers.DocumentBuilderFactory
 
 fun main(args: Array<String>) {
-    val factory = SAXParserFactory.newInstance()
-    val saxParser = factory.newSAXParser()
-    val catalogueHandler = CatalogueHandler()
-    with(catalogueHandler.javaClass.classLoader.getResourceAsStream(args[0])) {
-        saxParser.parse(this, catalogueHandler)
+
+    val documentBuilder = DocumentBuilderFactory.newInstance().newDocumentBuilder()
+
+    // Arbitrary classloader
+    val dom = with(FunSpec::class.java.classLoader.getResourceAsStream(args[0])) {
+        documentBuilder.parse(this)
     }
-    println(catalogueHandler.catalogue.entryLinks.size)
+
+    println(dom.getElementsByTagName("entryLink").length)
 }
