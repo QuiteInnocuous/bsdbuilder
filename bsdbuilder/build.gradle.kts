@@ -16,7 +16,8 @@ dependencies {
     // https://mvnrepository.com/artifact/com.squareup/kotlinpoet
     implementation("com.squareup:kotlinpoet:1.12.0")
     // https://mavenlibs.com/maven/dependency/org.openjax.xml/sax
-    implementation("org.openjax.xml:sax:0.9.4")
+    //mplementation("org.openjax.xml:sax:0.9.4")
+    implementation("sax:sax:2.0.1")
 
     testImplementation(kotlin("test"))
 }
