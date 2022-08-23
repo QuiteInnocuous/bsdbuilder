@@ -8,8 +8,7 @@ import javax.xml.parsers.DocumentBuilderFactory
 fun main(args: Array<String>) {
 
     val documentBuilder = DocumentBuilderFactory.newInstance().newDocumentBuilder()
-
-    // Arbitrary classloader
+    
     Files.list(Paths.get(args[0])).filter {
         it.fileName.toString().let {
             fileName ->
