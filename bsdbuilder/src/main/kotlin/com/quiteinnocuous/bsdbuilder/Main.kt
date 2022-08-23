@@ -1,11 +1,8 @@
 package com.quiteinnocuous.bsdbuilder
 
-import com.squareup.kotlinpoet.FunSpec
 import java.io.FileInputStream
-import java.io.InputStream
-import java.net.URI
-import java.net.URISyntaxException
-import java.nio.file.*
+import java.nio.file.Files
+import java.nio.file.Paths
 import javax.xml.parsers.DocumentBuilderFactory
 
 fun main(args: Array<String>) {
@@ -14,13 +11,16 @@ fun main(args: Array<String>) {
 
     // Arbitrary classloader
     Files.list(Paths.get(args[0])).filter {
-        it.toString().endsWith(".cat")
+        it.fileName.toString().let {
+            fileName ->
+            !fileName.startsWith("ZZ") && fileName.endsWith(".cat")
+        }
     }.map {
         with(
             FileInputStream(it.toString()),
             documentBuilder::parse
         )
     }.forEach {
-        println(it.childNodes.length)
+        println(it.getElementsByTagName("catalogue").item(0).attributes.getNamedItem("name").nodeValue)
     }
 }
