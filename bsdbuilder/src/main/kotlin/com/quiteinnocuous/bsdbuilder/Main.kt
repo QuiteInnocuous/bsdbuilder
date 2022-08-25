@@ -24,7 +24,23 @@ fun main(args: Array<String>) {
     }
 
     idsToDoms.forEach { (id, dom) ->
-        val name = dom.getElementsByTagName("catalogue").item(0).attributes.getNamedItem("name").nodeValue
-        println("$id => $name")
+        val catalogue = dom.getElementsByTagName("catalogue").item(0)
+        val name = catalogue.attributes?.let {
+            // Skip non-libraries
+            if (it.getNamedItem("library").nodeValue?.toString().toBoolean()) {
+                return@forEach
+            }
+            it.getNamedItem("name").nodeValue
+        }
+        val entryLinks = dom.getElementsByTagName("entryLinks").item(0)
+        println("$id => $name : ${entryLinks.childNodes.length}")
+        for (i in 0 until entryLinks.childNodes.length) {
+            val entryLink = entryLinks.childNodes.item(i)
+            if (entryLink.nodeName == "#text") {
+                continue
+            }
+            val entryLinkName = entryLink.attributes.getNamedItem("name").nodeValue
+            println("  $entryLinkName")
+        }
     }
 }
