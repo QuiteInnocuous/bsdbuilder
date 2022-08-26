@@ -1,5 +1,7 @@
 package com.quiteinnocuous.bsdbuilder
 
+import org.w3c.dom.Node
+import org.w3c.dom.NodeList
 import java.io.FileInputStream
 import java.nio.file.Files
 import java.nio.file.Paths
@@ -20,11 +22,11 @@ fun main(args: Array<String>) {
             documentBuilder::parse
         )
     }.asSequence().associateBy {
-        it.getElementsByTagName("catalogue").item(0).attributes.getNamedItem("id").nodeValue
+        it.getElementsByTagName("catalogue")[0].attributes.getNamedItem("id").nodeValue
     }
 
     idsToDoms.forEach { (id, dom) ->
-        val catalogue = dom.getElementsByTagName("catalogue").item(0)
+        val catalogue = dom.getElementsByTagName("catalogue")[0]
         val name = catalogue.attributes?.let {
             // Skip non-libraries
             if (it.getNamedItem("library").nodeValue?.toString().toBoolean()) {
@@ -32,15 +34,39 @@ fun main(args: Array<String>) {
             }
             it.getNamedItem("name").nodeValue
         }
-        val entryLinks = dom.getElementsByTagName("entryLinks").item(0)
+        val entryLinks = dom.getElementsByTagName("entryLinks")[0]
         println("$id => $name : ${entryLinks.childNodes.length}")
-        for (i in 0 until entryLinks.childNodes.length) {
-            val entryLink = entryLinks.childNodes.item(i)
-            if (entryLink.nodeName == "#text") {
-                continue
+        val catalogueDoms = dom.getElementsByTagName("catalogueLinks").takeIf {
+            it.length == 1
+        }?.let {
+            nodeList ->
+            nodeList[0].childNodes.asSequence().skipText().map {
+                val catalogueLinkId = it.attributes.getNamedItem("targetId").nodeValue
+                println(catalogueLinkId)
+                idsToDoms[catalogueLinkId]
+            }.toList()
+        } ?: listOf()
+
+        entryLinks.childNodes.forEach {
+            if (it.nodeName != "#text") {
+                val entryLinkName = it.attributes.getNamedItem("name").nodeValue
+                println("  $entryLinkName")
             }
-            val entryLinkName = entryLink.attributes.getNamedItem("name").nodeValue
-            println("  $entryLinkName")
         }
     }
 }
+
+fun NodeList.asSequence(): Sequence<Node> = generateSequence(Pair(0, item(0))) {
+    (i, _) ->
+    if (i < length - 1) { Pair(i+1, item(i+1)) } else { null }
+}.map { it.second }
+
+fun NodeList.forEach(action: (Node) -> Unit) {
+    for (i in 0 until length) {
+        action(item(i))
+    }
+}
+
+operator fun NodeList.get(i: Int): Node = item(i)
+
+fun Sequence<Node>.skipText() = filter { it.nodeName != "#text" }
