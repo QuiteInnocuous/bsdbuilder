@@ -3,6 +3,7 @@ package com.quiteinnocuous.bsdbuilder
 import org.w3c.dom.Node
 import org.w3c.dom.NodeList
 import java.io.FileInputStream
+import java.lang.IllegalStateException
 import java.nio.file.Files
 import java.nio.file.Paths
 import javax.xml.parsers.DocumentBuilderFactory
@@ -42,16 +43,14 @@ fun main(args: Array<String>) {
             nodeList ->
             nodeList[0].childNodes.asSequence().skipText().map {
                 val catalogueLinkId = it.attributes.getNamedItem("targetId").nodeValue
-                println(catalogueLinkId)
                 idsToDoms[catalogueLinkId]
             }.toList()
         } ?: listOf()
 
-        entryLinks.childNodes.forEach {
-            if (it.nodeName != "#text") {
-                val entryLinkName = it.attributes.getNamedItem("name").nodeValue
-                println("  $entryLinkName")
-            }
+        entryLinks.childNodes.asSequence().skipText().forEach {
+            val entryLinkName = it.attributes.getNamedItem("name").nodeValue
+            val targetId = it.attributes.getNamedItem("targetId").nodeValue ?: throw IllegalStateException("Could not find targetId for $entryLinkName")
+            println("  $entryLinkName $targetId")
         }
     }
 }
