@@ -1,10 +1,8 @@
 package com.quiteinnocuous.bsdbuilder
 
-import org.w3c.dom.Element
 import org.w3c.dom.Node
 import org.w3c.dom.NodeList
 import java.io.FileInputStream
-import java.lang.IllegalStateException
 import java.nio.file.Files
 import java.nio.file.Paths
 import javax.xml.parsers.DocumentBuilderFactory
@@ -52,10 +50,15 @@ fun main(args: Array<String>) {
             val entryLinkName = it.attributes.getNamedItem("name").nodeValue
             val targetId = it.attributes.getNamedItem("targetId").nodeValue ?: throw IllegalStateException("Could not find targetId for $entryLinkName")
 
-            val target = catalogueDoms.fold(null as Element?) {
-                acc, nextDom ->
-                acc ?: nextDom.getElementById(targetId)
+//            val target = idsToDoms.values.fold(null as Element?) {
+//                acc, nextDom ->
+//                acc ?: nextDom.getElementById(targetId)
+//            }
+            entryLinks.childNodes.asSequence().skipText().forEach {
+                odd ->
+                println(odd.attributes.getNamedItem("name").nodeValue)
             }
+            val target = dom.getElementById(targetId)
             println(targetId)
             target!!
             println("  $entryLinkName $targetId")
