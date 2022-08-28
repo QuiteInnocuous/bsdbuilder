@@ -1,5 +1,6 @@
 package com.quiteinnocuous.bsdbuilder
 
+import org.w3c.dom.Element
 import org.w3c.dom.Node
 import org.w3c.dom.NodeList
 import java.io.FileInputStream
@@ -37,19 +38,26 @@ fun main(args: Array<String>) {
         }
         val entryLinks = dom.getElementsByTagName("entryLinks")[0]
         println("$id => $name : ${entryLinks.childNodes.length}")
-        val catalogueDoms = dom.getElementsByTagName("catalogueLinks").takeIf {
+        val catalogueDoms = (dom.getElementsByTagName("catalogueLinks").takeIf {
             it.length == 1
         }?.let {
             nodeList ->
             nodeList[0].childNodes.asSequence().skipText().map {
                 val catalogueLinkId = it.attributes.getNamedItem("targetId").nodeValue
-                idsToDoms[catalogueLinkId]
+                idsToDoms[catalogueLinkId]!!
             }.toList()
-        } ?: listOf()
+        } ?: listOf()) + listOf(dom)
 
         entryLinks.childNodes.asSequence().skipText().forEach {
             val entryLinkName = it.attributes.getNamedItem("name").nodeValue
             val targetId = it.attributes.getNamedItem("targetId").nodeValue ?: throw IllegalStateException("Could not find targetId for $entryLinkName")
+
+            val target = catalogueDoms.fold(null as Element?) {
+                acc, nextDom ->
+                acc ?: nextDom.getElementById(targetId)
+            }
+            println(targetId)
+            target!!
             println("  $entryLinkName $targetId")
         }
     }
