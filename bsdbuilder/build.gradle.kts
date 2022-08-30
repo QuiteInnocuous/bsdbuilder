@@ -18,6 +18,15 @@ dependencies {
     // https://mavenlibs.com/maven/dependency/org.openjax.xml/sax
     //mplementation("org.openjax.xml:sax:0.9.4")
     implementation("sax:sax:2.0.1")
+    // https://mvnrepository.com/artifact/com.fasterxml.jackson.dataformat/jackson-dataformat-xml
+    //implementation("com.fasterxml.jackson.dataformat:jackson-dataformat-xml:2.11.1")
+    implementation("com.fasterxml.jackson.dataformat:jackson-dataformat-xml:2.13.3")
+    implementation("com.fasterxml.jackson.module:jackson-module-kotlin:2.13.3")
+
+//    <groupId>com.fasterxml.jackson.dataformat</groupId>
+//    <artifactId>jackson-dataformat-xml</artifactId>
+//    <version>2.11.1</version>
+
 
     testImplementation(kotlin("test"))
 }
