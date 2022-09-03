@@ -2,6 +2,7 @@ package com.quiteinnocuous.bsdbuilder.data
 
 data class Catalogue(
     var id: String,
+    var gameSystemId: String,
     // catalog
     var name: String,
     var library: Boolean,

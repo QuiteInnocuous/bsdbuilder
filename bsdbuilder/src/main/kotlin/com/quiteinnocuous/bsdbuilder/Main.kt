@@ -6,9 +6,11 @@ import com.fasterxml.jackson.dataformat.xml.JacksonXmlModule
 import com.fasterxml.jackson.dataformat.xml.XmlMapper
 import com.fasterxml.jackson.module.kotlin.registerKotlinModule
 import com.quiteinnocuous.bsdbuilder.data.Catalogue
+import com.quiteinnocuous.bsdbuilder.data.GameSystem
 import com.quiteinnocuous.bsdbuilder.data.SelectionEntry
 import java.nio.file.Files
 import java.nio.file.Paths
+import java.util.stream.Collectors
 
 fun main(args: Array<String>) {
     val mapper = XmlMapper.builder().addModule(JacksonXmlModule())
@@ -18,6 +20,12 @@ fun main(args: Array<String>) {
         .registerKotlinModule()
 
     val pathString = args[0]
+
+    val idToGameSystem = Files.list(Paths.get(pathString)).filter {
+        it.fileName.toString().endsWith(".gst")
+    }.map {
+        mapper.readValue(it.toFile(), GameSystem::class.java)
+    }.collect(Collectors.toMap({ it.id }, { it }))
 
     Files.list(Paths.get(pathString)).filter {
         it.fileName.toString().let { fileName ->
@@ -40,9 +48,11 @@ fun main(args: Array<String>) {
             )
         }.let {
             linkedCatalogues ->
-            linkedCatalogues + catalogue
+            linkedCatalogues + listOf(catalogue)
         }.map {
             it.sharedSelectionEntries
+        }.let {
+            it + listOf(idToGameSystem[catalogue.gameSystemId]!!.sharedSelectionEntries)
         }.reduce {
             a, b ->
             a + b
@@ -51,6 +61,7 @@ fun main(args: Array<String>) {
             entryLink ->
             if (!libraries.contains(entryLink.targetId)) {
                 println("wut ${entryLink.name}")
+                throw IllegalStateException()
             }
         }
     }
