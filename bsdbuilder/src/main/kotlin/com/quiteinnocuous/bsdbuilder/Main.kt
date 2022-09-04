@@ -40,7 +40,7 @@ fun main(args: Array<String>) {
         println(catalogue.name)
         println(catalogue.entryLinks.size)
         println(catalogue.catalogueLinks.size)
-        val libraries: Map<String, SelectionEntry> = catalogue.catalogueLinks.map {
+        val idToSelectionEntry: Map<String, SelectionEntry> = catalogue.catalogueLinks.map {
             catalogueLink ->
             mapper.readValue(
                 Paths.get(pathString, "${catalogueLink.name}.cat").toFile(),
@@ -59,10 +59,10 @@ fun main(args: Array<String>) {
         }.associateBy { it.id }
         catalogue.entryLinks.forEach {
             entryLink ->
-            if (!libraries.contains(entryLink.targetId)) {
-                println("wut ${entryLink.name}")
-                throw IllegalStateException()
-            }
+            val selectionEntry = idToSelectionEntry[entryLink.targetId]
+                ?: throw IllegalStateException("Could not find ${entryLink.name}: ${entryLink.name}")
+
+
         }
     }
 }
