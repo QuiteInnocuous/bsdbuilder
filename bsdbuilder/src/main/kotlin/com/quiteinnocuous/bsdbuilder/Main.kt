@@ -60,7 +60,8 @@ fun main(args: Array<String>) {
         catalogue.entryLinks.forEach {
             entryLink ->
             val selectionEntry = idToSelectionEntry[entryLink.targetId]
-                ?: throw IllegalStateException("Could not find ${entryLink.name}: ${entryLink.name}")
+                ?: throw IllegalStateException("Could not find ${entryLink.targetId}: ${entryLink.name}")
+            selectionEntry.profiles ?: throw IllegalStateException("Could not find profiles for: ${entryLink.name}")
 
 
         }
