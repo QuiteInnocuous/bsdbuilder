@@ -40,6 +40,7 @@ fun main(args: Array<String>) {
         println(catalogue.name)
         println(catalogue.entryLinks.size)
         println(catalogue.catalogueLinks.size)
+
         val idToSelectionEntry: Map<String, SelectionEntry> = catalogue.catalogueLinks.map {
             catalogueLink ->
             mapper.readValue(
@@ -57,11 +58,22 @@ fun main(args: Array<String>) {
             a, b ->
             a + b
         }.associateBy { it.id }
+
         catalogue.entryLinks.forEach {
             entryLink ->
             val selectionEntry = idToSelectionEntry[entryLink.targetId]
                 ?: throw IllegalStateException("Could not find ${entryLink.targetId}: ${entryLink.name}")
-            selectionEntry.profiles ?: throw IllegalStateException("Could not find profiles for: ${entryLink.name}")
+            // Some selectionEntry units don't have profiles.
+//            selectionEntry.takeIf {
+//                it.type == "unit"
+//            }?.let {
+//                it.profiles ?: throw IllegalStateException("Could not find profiles for: ${entryLink.name}")
+//            }
+            selectionEntry.takeIf {
+                it.type == "unit" && it.profiles == null
+            }?.let {
+                println(it.name)
+            }
 
 
         }
