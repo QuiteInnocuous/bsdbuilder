@@ -1,14 +1,19 @@
 package com.quiteinnocuous.bsdbuilder.data
 
 data class Catalogue(
+
+    // Attributes
     var id: String,
-    var gameSystemId: String,
-    // catalog
     var name: String,
+    var revision: Int,
+    var battleScribeVersion: String,
     var library: Boolean,
+    var gameSystemId: String,
+    var gameSystemRevision: Int,
+
+    // Children
     var entryLinks: List<EntryLink> = listOf(),
     var catalogueLinks: List<CatalogueLink> = listOf(),
-    // library
     var sharedSelectionEntries: List<SelectionEntry> = listOf()
 
 )
